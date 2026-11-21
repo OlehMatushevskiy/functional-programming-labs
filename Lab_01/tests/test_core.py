@@ -3,7 +3,14 @@ from copy import deepcopy
 
 import pytest
 
-from core import BillingReport, MeterReading, calculate_consumption, make_processor
+from ..core import (
+    BillingReport,
+    MeterReading,
+    calculate_consumption,
+    compose,
+    make_multiplier,
+    make_processor,
+)
 
 Processor = Callable[[Sequence[MeterReading]], BillingReport]
 
@@ -81,3 +88,20 @@ def test_zero_consumption() -> None:
 def test_rejects_invalid_readings(previous: float, current: float) -> None:
     with pytest.raises(ValueError, match="0 <= previous <= current"):
         calculate_consumption(previous, current)
+
+
+def test_compose_applies_inner_then_outer() -> None:
+    def increment(value: int) -> int:
+        return value + 1
+
+    double = make_multiplier(2)
+
+    assert compose(increment, double)(4) == 9
+
+
+def test_make_multiplier_retains_its_factor() -> None:
+    double = make_multiplier(2)
+    triple = make_multiplier(3)
+
+    assert double(4) == 8
+    assert triple(4) == 12

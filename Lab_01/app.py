@@ -1,4 +1,9 @@
-from core import BillingReport, MeterReading, make_processor
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING or __package__:
+    from .core import BillingReport, MeterReading, compose, make_processor
+else:
+    from core import BillingReport, MeterReading, compose, make_processor
 
 
 def print_receipts(report: BillingReport) -> None:
@@ -14,13 +19,21 @@ def print_receipts(report: BillingReport) -> None:
 
 def main() -> None:
     rates = {"звичайний": 4.0, "пільговий": 3.0}
-    benefit_rates = {"звичайний": 0.0, "пільговий": 0.25}
+    benefit_percentages = {"звичайний": 0.0, "пільговий": 25.0}
+
+    def as_fraction(percent: float) -> float:
+        return percent / 100
+
+    def fraction_due(benefit: float) -> float:
+        return 1 - benefit
+
+    benefit_multiplier = compose(fraction_due, as_fraction)
 
     def tariff_for(group: str) -> float:
         return rates[group]
 
     def apply_benefit(group: str, subtotal: float) -> float:
-        return subtotal * (1 - benefit_rates[group])
+        return subtotal * benefit_multiplier(benefit_percentages[group])
 
     readings: list[MeterReading] = [
         {

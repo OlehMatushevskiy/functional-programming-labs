@@ -1,6 +1,6 @@
 # The assignment requires typing.Callable.
 from collections.abc import Sequence
-from typing import Callable, TypedDict  # noqa: UP035
+from typing import Callable, TypedDict, TypeVar  # noqa: UP035
 
 
 class MeterReading(TypedDict):
@@ -78,3 +78,22 @@ def make_processor(
         )
 
     return process
+
+
+A = TypeVar("A")
+B = TypeVar("B")
+C = TypeVar("C")
+
+
+def compose(outer: Callable[[B], C], inner: Callable[[A], B]) -> Callable[[A], C]:
+    def composed(value: A) -> C:
+        return outer(inner(value))
+
+    return composed
+
+
+def make_multiplier(factor: int) -> Callable[[int], int]:
+    def multiply(value: int) -> int:
+        return value * factor
+
+    return multiply
