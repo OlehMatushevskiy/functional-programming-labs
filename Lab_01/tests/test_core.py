@@ -34,10 +34,13 @@ def processor() -> Processor:
     return make_processor(tariff_for=tariff_for, apply_benefit=apply_benefit)
 
 
-def test_same_input_and_policies_give_same_result(
+def test_referential_transparency(
     sample_readings: list[MeterReading], processor: Processor
 ) -> None:
-    assert processor(sample_readings) == processor(deepcopy(sample_readings))
+    first = processor(sample_readings)
+    second = processor(sample_readings)
+
+    assert first == second
 
 
 def test_processing_preserves_input_records(
@@ -84,7 +87,10 @@ def test_zero_consumption() -> None:
     assert calculate_consumption(120, 120) == 0
 
 
-@pytest.mark.parametrize(("previous", "current"), [(120, 119), (-1, 120)])
+@pytest.mark.parametrize(
+    ("previous", "current"),
+    [(120, 119), (-1, 120), (0, float("inf")), (float("nan"), 120)],
+)
 def test_rejects_invalid_readings(previous: float, current: float) -> None:
     with pytest.raises(ValueError, match="0 <= previous <= current"):
         calculate_consumption(previous, current)
@@ -96,12 +102,41 @@ def test_compose_applies_inner_then_outer() -> None:
 
     double = make_multiplier(2)
 
-    assert compose(increment, double)(4) == 9
+    assert compose(f=increment, g=double)(4) == 9
 
 
 def test_make_multiplier_retains_its_factor() -> None:
     double = make_multiplier(2)
-    triple = make_multiplier(3)
+    triple = make_multiplier(k=3)
 
     assert double(4) == 8
     assert triple(4) == 12
+
+
+def test_total_sums_the_rounded_amounts_on_the_bills(
+    sample_readings: list[MeterReading],
+) -> None:
+    one_kwh_each: list[MeterReading] = [
+        {**reading, "current": reading["previous"] + 1} for reading in sample_readings
+    ]
+    processor = make_processor(
+        tariff_for=lambda group: 1.006,
+        apply_benefit=lambda group, subtotal: subtotal,
+    )
+
+    report = processor(one_kwh_each)
+
+    assert [bill["amount_due"] for bill in report["bills"]] == [1.01, 1.01]
+    assert report["total_due"] == 2.02
+
+
+def test_rejects_non_finite_amount_returned_by_policy(
+    sample_readings: list[MeterReading],
+) -> None:
+    processor = make_processor(
+        tariff_for=lambda group: 4.0,
+        apply_benefit=lambda group, subtotal: float("inf"),
+    )
+
+    with pytest.raises(ValueError, match="Bill amounts must be finite"):
+        processor(sample_readings)
