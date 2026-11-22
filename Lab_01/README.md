@@ -5,22 +5,24 @@
 - `core.py` створює нові записи квитанцій без зміни вхідних даних. Фабрика `make_processor` приймає дві функції через `typing.Callable`: вибір тарифу за групою та застосування пільги до суми.
 - `compose` поєднує перетворення відсотка пільги на частку з розрахунком частки до сплати. `make_multiplier` повертає функцію множення на задане число. Список квитанцій створюється через списковий вираз.
 - `app.py` містить `main()`, яка задає демонстраційні показники і правила та друкує квитанції. Тарифи й відсотки обрані для прикладу.
-- `__main__.py` запускає `main()` командою `python -m lab01`.
+- `main.py` запускає функцію `main()` з `app.py`.
 - `tests/test_core.py` перевіряє повторюваність результату, відсутність мутацій, заміну правил і розрахунки.
+- `report/lab1.pdf` містить звіт про виконання лабораторної.
 
-Для запуску з кореня репозиторію потрібен Python 3.10 або новіший.
+Для запуску потрібен Python 3.10 або новіший. З кореня репозиторію виконай `python3 Lab_01/main.py`.
+
+Щоб запустити програму й усі перевірки, перейди до папки лабораторної.
 
 ```bash
+cd Lab_01
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r lab01/requirements.txt
-python -m lab01
-python -m pytest lab01/tests
-python -m mypy lab01
-python -m black --check lab01
-python -m ruff check lab01
+python -m pip install -r requirements.txt
+python main.py
+python -m pytest
+python -m mypy .
+python -m black --check .
+python -m ruff check .
 ```
 
 У демонстрації звичайна квитанція становить 300,00 грн, пільгова — 135,00 грн. Разом — 435,00 грн.
-
-З каталогу `lab01` програму також можна запустити командою `python app.py`, а тести — командою `python -m pytest`.

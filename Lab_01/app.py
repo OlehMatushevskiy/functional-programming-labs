@@ -1,9 +1,4 @@
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING or __package__:
-    from .core import BillingReport, MeterReading, compose, make_processor
-else:
-    from core import BillingReport, MeterReading, compose, make_processor
+from core import BillingReport, MeterReading, compose, make_processor
 
 
 def print_receipts(report: BillingReport) -> None:

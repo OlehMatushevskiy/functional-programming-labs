@@ -3,7 +3,7 @@ from copy import deepcopy
 
 import pytest
 
-from ..core import (
+from core import (
     BillingReport,
     MeterReading,
     calculate_consumption,
