@@ -1,0 +1,8 @@
+[
+  {"id": 3, "name": "Миша", "category": "Електроніка", "price": 100.0, "stock": 2},
+  {"id": 1, "name": "Клавіатура", "category": "Електроніка", "price": 110.0, "stock": 2},
+  {"id": 2, "name": "Етикетки", "category": "Пакування", "price": 55.0, "stock": 4},
+  {"id": 4, "name": "Кабель", "category": "Електроніка", "price": 400.0, "stock": 0},
+  {"id": 5, "name": "Офісний стілець", "category": "Меблі", "price": 150.0, "stock": 1},
+  {"id": 6, "name": "Зошит", "category": "Канцтовари", "price": 22.5, "stock": 6}
+]
