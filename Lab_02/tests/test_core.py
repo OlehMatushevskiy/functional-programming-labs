@@ -1,8 +1,12 @@
+import json
+import subprocess
+import sys
 from copy import deepcopy
+from pathlib import Path
 
 import pytest
 
-from ..core import (
+from core import (
     Record,
     boost_category,
     build_pipeline,
@@ -128,3 +132,47 @@ def test_juxt_passes_same_input_to_each_function() -> None:
         return value * 2
 
     assert juxt(double, abs)(-3) == (-6, 3)
+
+
+def test_main_runs_from_repository_root() -> None:
+    lab_dir = Path(__file__).resolve().parents[1]
+    run = subprocess.run(
+        [sys.executable, str(lab_dir / "main.py"), "--top", "2"],
+        cwd=lab_dir.parent,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    result = json.loads(run.stdout)
+
+    assert [record["id"] for record in result["records"]] == [1, 2]
+    assert result["stats"] == {"count": 2, "inventory_value": 462.0, "avg_value": 231.0}
+
+
+def test_main_loads_the_provided_sample_json() -> None:
+    lab_dir = Path(__file__).resolve().parents[1]
+    run = subprocess.run(
+        [sys.executable, "main.py", "--data", "sample_data.json", "--top", "3"],
+        cwd=lab_dir,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    result = json.loads(run.stdout)
+
+    assert [record["id"] for record in result["records"]] == [1, 2, 3]
+    assert result["stats"]["inventory_value"] == 682.0
+
+
+def test_main_rejects_negative_top_n() -> None:
+    lab_dir = Path(__file__).resolve().parents[1]
+    run = subprocess.run(
+        [sys.executable, "main.py", "--top", "-1"],
+        cwd=lab_dir,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert run.returncode == 2
+    assert "non-negative integer" in run.stderr

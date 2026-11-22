@@ -2,12 +2,8 @@ import argparse
 import json
 from math import isfinite
 from pathlib import Path
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING or __package__:
-    from .core import Record, build_pipeline, reduce_stats
-else:
-    from core import Record, build_pipeline, reduce_stats
+from core import Record, build_pipeline, reduce_stats
 
 
 def _read_record(value: object, index: int) -> Record:
@@ -66,7 +62,7 @@ def _non_negative_factor(text: str) -> float:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Аналіз товарів складу")
-    sample_file = Path(__file__).resolve().parent / "lab2" / "sample_data.json"
+    sample_file = Path(__file__).resolve().with_name("sample_data.json")
     parser.add_argument("--data", type=Path, default=sample_file)
     parser.add_argument("--top", type=_non_negative_int, default=2)
     parser.add_argument("--boost-category", "--category", default="Електроніка")
