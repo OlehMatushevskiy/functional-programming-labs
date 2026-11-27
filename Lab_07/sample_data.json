@@ -1,0 +1,7 @@
+[
+  {"guest": "  ALICE ", "nights": "2", "room_type": " Standard ", "price": "1500", "status": " Confirmed "},
+  {"guest": " bob ", "nights": "3", "room_type": "SUITE", "price": "1200", "status": "CONFIRMED"},
+  {"guest": "carol", "nights": "5", "room_type": "suite", "price": "1600", "status": "pending"},
+  {"guest": " dan ", "nights": "3", "room_type": "Standard", "price": "1000", "status": "confirmed"},
+  {"guest": "eva", "nights": "1", "room_type": "standard", "price": "900", "status": "confirmed"}
+]

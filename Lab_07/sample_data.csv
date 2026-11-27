@@ -1,0 +1,6 @@
+guest,nights,room_type,price,status
+"  ALICE ",2," Standard ",1500," Confirmed "
+" bob ",3,SUITE,1200,CONFIRMED
+carol,5,suite,1600,pending
+" dan ",3,Standard,1000,confirmed
+eva,1,standard,900,confirmed
